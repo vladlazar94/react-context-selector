@@ -1,3 +1,3 @@
-import { ContextMap } from "./Types";
+import { ContextData } from "./Types";
 
-export const contextMap: ContextMap = new Map();
+export const contextMap = new Map<(value: any) => void, ContextData<any>>();

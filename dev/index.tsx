@@ -11,14 +11,16 @@ const initialState = {
     },
 };
 
-const context = createContext(initialState);
+const useNotifier = createContext(initialState);
 
 function App() {
     const [state, setState] = React.useState(initialState);
     const app = React.useMemo(() => <ContextConsumers />, []);
 
+    useNotifier(state);
+
     return (
-        <context.Provider value={state}>
+        <div>
             {app}
             <button onClick={() => setState({ ...state, foo: `${state.foo}o` })}>Change foo</button>
             <button
@@ -28,7 +30,7 @@ function App() {
             >
                 Change baz
             </button>
-        </context.Provider>
+        </div>
     );
 }
 
@@ -46,8 +48,8 @@ function ContextConsumers() {
 }
 
 function SomeComp() {
-    const foo = useSelector(context, c => c.foo);
-    const baz = useSelector(context, c => c.bar.baz);
+    const foo = useSelector(useNotifier, c => c.foo);
+    const baz = useSelector(useNotifier, c => c.bar.baz);
 
     return (
         <span>
@@ -58,13 +60,13 @@ function SomeComp() {
 }
 
 function SomeOtherComp() {
-    const baz = useSelector(context, c => c.bar.baz);
+    const baz = useSelector(useNotifier, c => c.bar.baz);
 
     return <span>{baz}</span>;
 }
 
 function SomeOptionalComp() {
-    const foo = useSelector(context, c => c.foo);
+    const foo = useSelector(useNotifier, c => c.foo);
 
     return <span>{foo}</span>;
 }

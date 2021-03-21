@@ -1,10 +1,13 @@
 import React from "react";
 
 import { contextMap } from "./GlobalState";
-import { Context, ContextData } from "./Types";
+import { ContextData } from "./Types";
 
-export function useSelector<T, G>(context: Context<T>, selector: (value: T) => G): G {
-    const contextData: ContextData<T> = contextMap.get(context)!;
+export function useSelector<T, G>(
+    useNotifierHook: (value: T) => void,
+    selector: (value: T) => G
+): G {
+    const contextData: ContextData<T> = contextMap.get(useNotifierHook)!;
     const selectedValue = selector(contextData.value);
     const [, notifyUpdate] = React.useReducer(s => !s, true);
 

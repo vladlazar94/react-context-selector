@@ -1,36 +1,31 @@
 import React from "react";
 
 import { contextMap } from "./GlobalState";
-import { ContextData, Subscription, ValueWrapper } from "./Types";
+import { ContextData, Subscription } from "./Types";
 
 export function createContext<T>(value: T) {
     const subscriptions = new Set<Subscription<T, any>>();
     const contextData = { value, subscriptions };
-    const Provider = createProvider(contextData);
-    const context = { Provider };
+    const hook = createUseNotifierHook(contextData);
 
-    contextMap.set(context, contextData);
+    contextMap.set(hook, contextData);
 
-    return context;
+    return hook;
 }
 
-function createProvider<T>(
-    contextData: ContextData<T>
-): React.FunctionComponent<React.PropsWithChildren<ValueWrapper<T>>> {
-    return function (props) {
-        contextData.value = props.value;
+function createUseNotifierHook<T>(contextData: ContextData<T>) {
+    return function (value: T) {
+        contextData.value = value;
 
-        React.useEffect(() => {
+        React.useLayoutEffect(() => {
             for (const subscription of contextData.subscriptions) {
-                const latestValue = subscription.selector(props.value);
+                const latestValue = subscription.selector(value);
 
                 if (latestValue !== subscription.selectedValue) {
                     subscription.selectedValue = latestValue;
                     subscription.notifyUpdate();
                 }
             }
-        }, [props.value]);
-
-        return <>{props.children}</>;
+        }, [value]);
     };
 }

@@ -1,5 +1,3 @@
-export type ContextMap = Map<Context<any>, ContextData<any>>;
-
 export type Context<T> = {
     readonly Provider: Provider<T>;
 };
@@ -22,3 +20,5 @@ export type Subscription<T, G> = {
 export type ValueWrapper<T> = {
     readonly value: T;
 };
+
+export type UseNotifierHook<T> = (value: T) => void;
