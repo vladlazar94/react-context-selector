@@ -34,15 +34,18 @@ function App() {
 }
 
 function ContextConsumers() {
-    const [show, setShow] = React.useState(true);
-
     return (
-        <>
-            <SomeComp />
-            <SomeOtherComp />
-            {show ? <SomeOptionalComp /> : null}
-            <button onClick={() => setShow(!show)}>Show!</button>
-        </>
+        <ul>
+            <li>
+                <SomeComp />
+            </li>
+            <li>
+                <SomeOtherComp />
+            </li>
+            <li>
+                <SomeOptionalComp />
+            </li>
+        </ul>
     );
 }
 
@@ -59,15 +62,28 @@ function SomeComp() {
 }
 
 function SomeOtherComp() {
-    const baz = useSelector(c => c.bar.baz);
+    const [showFoo, setShowFoo] = React.useState(true);
+    const selector = showFoo ? (c: any) => c.foo : (c: any) => c.bar.baz;
+    const baz = useSelector(selector);
 
-    return <span>{baz}</span>;
+    return (
+        <span>
+            {baz}
+            <button onClick={() => setShowFoo(!showFoo)}>Show foo or baz</button>
+        </span>
+    );
 }
 
 function SomeOptionalComp() {
+    const [show, setShow] = React.useState(true);
     const foo = useSelector(c => c.foo);
 
-    return <span>{foo}</span>;
+    return (
+        <span>
+            {show ? foo : null}
+            <button onClick={() => setShow(!show)}>Show!</button>
+        </span>
+    );
 }
 
 ReactDOM.render(<App />, document.getElementById("react-root"));

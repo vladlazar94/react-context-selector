@@ -1,11 +1,7 @@
 import React from "react";
 
-type Notifier<T> = (value: T) => void;
-type Selector<T, G> = (value: T) => G;
-
-export function createContext<T>(value: T): [Notifier<T>, <G>(selector: Selector<T, G>) => G] {
+export function createContext<T>(value: T): [UseNotifier<T>, UseSelector<T>] {
     const contextData: ContextData<T> = { value, subscriptions: new Set() };
-
     const useNotifierHook = createUseNotifierHook(contextData);
     const useSelectorHook = createUseSelectorHook(contextData);
 
@@ -17,12 +13,14 @@ function createUseNotifierHook<T>(contextData: ContextData<T>) {
         contextData.value = value;
 
         React.useLayoutEffect(() => {
-            for (const subscription of contextData.subscriptions) {
-                const latestValue = subscription.selector(value);
-
-                if (latestValue !== subscription.selectedValue) {
-                    subscription.selectedValue = latestValue;
-                    subscription.notifyUpdate();
+            for (const {
+                areEqual,
+                select,
+                selectedValue,
+                notifyUpdate,
+            } of contextData.subscriptions) {
+                if (!areEqual(select(value), selectedValue)) {
+                    notifyUpdate();
                 }
             }
         }, [value]);
@@ -30,17 +28,24 @@ function createUseNotifierHook<T>(contextData: ContextData<T>) {
 }
 
 function createUseSelectorHook<T>(contextData: ContextData<T>) {
-    return function <G>(selector: (value: T) => G) {
-        const selectedValue = selector(contextData.value);
+    return function <G>(select: (value: T) => G, areEqual?: EqualityFn<G>) {
+        const selectedValue = select(contextData.value);
         const [, notifyUpdate] = React.useReducer(s => !s, true);
-
-        React.useEffect(() => {
-            const subscription = {
-                selector,
+        const subscription = React.useMemo(
+            () => ({
+                select,
                 selectedValue,
                 notifyUpdate,
-            };
+                areEqual: areEqual ?? referenceEquality,
+            }),
+            []
+        );
 
+        subscription.select = select;
+        subscription.selectedValue = selectedValue;
+        subscription.areEqual = areEqual ?? referenceEquality;
+
+        React.useEffect(() => {
             contextData.subscriptions.add(subscription);
 
             return () => {
@@ -52,13 +57,22 @@ function createUseSelectorHook<T>(contextData: ContextData<T>) {
     };
 }
 
-export type ContextData<T> = {
+function referenceEquality<G>(left: G, right: G): boolean {
+    return left === right;
+}
+
+type UseNotifier<T> = (value: T) => void;
+type UseSelector<T> = <G>(selector: Selector<T, G>, areEqual?: EqualityFn<G>) => G;
+type Selector<T, G> = (value: T) => G;
+type EqualityFn<G> = (left: G, right: G) => boolean;
+type ContextData<T> = {
     value: T;
-    readonly subscriptions: Set<Subscription<any, any>>;
+    subscriptions: Set<Subscription<T, any>>;
 };
 
-export type Subscription<T, G> = {
+type Subscription<T, G> = {
     selectedValue: G;
-    selector: (value: T) => G;
-    readonly notifyUpdate: () => void;
+    select: Selector<T, G>;
+    areEqual: EqualityFn<G>;
+    notifyUpdate: () => void;
 };
