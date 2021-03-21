@@ -1,16 +1,13 @@
 import React from "react";
 
 import { contextMap } from "./GlobalState";
-import { MutableValueWrapper, Subscription, ValueWrapper } from "./Types";
+import { ContextData, Subscription, ValueWrapper } from "./Types";
 
 export function createContext<T>(value: T) {
     const subscriptions = new Set<Subscription<T, any>>();
-    const wrapper = { value };
-    const wrapperContext = React.createContext(wrapper);
-    const Provider = createProvider(wrapper, wrapperContext, subscriptions);
-
+    const contextData = { value, subscriptions };
+    const Provider = createProvider(contextData);
     const context = { Provider };
-    const contextData = { wrapperContext, subscriptions };
 
     contextMap.set(context, contextData);
 
@@ -18,15 +15,13 @@ export function createContext<T>(value: T) {
 }
 
 function createProvider<T>(
-    wrapper: MutableValueWrapper<T>,
-    wrapperContext: React.Context<MutableValueWrapper<T>>,
-    subscriptions: Set<Subscription<T, any>>
+    contextData: ContextData<T>
 ): React.FunctionComponent<React.PropsWithChildren<ValueWrapper<T>>> {
     return function (props) {
-        wrapper.value = props.value;
+        contextData.value = props.value;
 
         React.useEffect(() => {
-            for (const subscription of subscriptions) {
+            for (const subscription of contextData.subscriptions) {
                 const latestValue = subscription.selector(props.value);
 
                 if (latestValue !== subscription.selectedValue) {
@@ -36,6 +31,6 @@ function createProvider<T>(
             }
         }, [props.value]);
 
-        return <wrapperContext.Provider value={wrapper}>{props.children}</wrapperContext.Provider>;
+        return <>{props.children}</>;
     };
 }

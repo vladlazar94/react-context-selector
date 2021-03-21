@@ -9,7 +9,7 @@ export type Provider<T> = React.FunctionComponent<{
 }>;
 
 export type ContextData<T> = {
-    readonly wrapperContext: React.Context<ValueWrapper<T>>;
+    value: T;
     readonly subscriptions: Set<Subscription<any, any>>;
 };
 
@@ -21,8 +21,4 @@ export type Subscription<T, G> = {
 
 export type ValueWrapper<T> = {
     readonly value: T;
-};
-
-export type MutableValueWrapper<T> = {
-    value: T;
 };
