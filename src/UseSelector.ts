@@ -1,7 +1,6 @@
 import React from "react";
 
-import { contextMap } from "./GlobalState";
-import { ContextData } from "./Types";
+import { contextMap, ContextData } from "./GlobalState";
 
 export function useSelector<T, G>(
     useNotifierHook: (value: T) => void,

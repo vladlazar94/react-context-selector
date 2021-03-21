@@ -1,16 +1,15 @@
 import React from "react";
 
-import { contextMap } from "./GlobalState";
-import { ContextData, Subscription } from "./Types";
+import { contextMap, ContextData, Subscription } from "./GlobalState";
 
 export function createContext<T>(value: T) {
     const subscriptions = new Set<Subscription<T, any>>();
     const contextData = { value, subscriptions };
-    const hook = createUseNotifierHook(contextData);
+    const useNotifierHook = createUseNotifierHook(contextData);
 
-    contextMap.set(hook, contextData);
+    contextMap.set(useNotifierHook, contextData);
 
-    return hook;
+    return useNotifierHook;
 }
 
 function createUseNotifierHook<T>(contextData: ContextData<T>) {
