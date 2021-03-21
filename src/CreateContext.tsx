@@ -25,8 +25,8 @@ function createProvider<T>(
                 const latestValue = subscription.selector(props.value);
 
                 if (latestValue !== subscription.selectedValue) {
-                    subscription.setValue(latestValue);
                     subscription.selectedValue = latestValue;
+                    subscription.notifyUpdate();
                 }
             }
         }, [props.value]);

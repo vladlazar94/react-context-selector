@@ -16,7 +16,7 @@ export type ContextData<T> = {
 export type Subscription<T, G> = {
     selectedValue: G;
     selector: (value: T) => G;
-    readonly setValue: (value: G) => void;
+    readonly notifyUpdate: () => void;
 };
 
 export type ValueWrapper<T> = {

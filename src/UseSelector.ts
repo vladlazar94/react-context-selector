@@ -5,14 +5,14 @@ import { Context, ContextData } from "./Types";
 
 export function useSelector<T, G>(context: Context<T>, selector: (value: T) => G): G {
     const contextData: ContextData<T> = contextMap.get(context)!;
-    const selectedValue = React.useMemo(() => selector(contextData.value), []);
-    const [value, setValue] = React.useState(selectedValue);
+    const selectedValue = selector(contextData.value);
+    const [, notifyUpdate] = React.useReducer(s => !s, true);
 
     React.useEffect(() => {
         const subscription = {
             selector,
             selectedValue,
-            setValue,
+            notifyUpdate,
         };
 
         contextData.subscriptions.add(subscription);
@@ -22,5 +22,5 @@ export function useSelector<T, G>(context: Context<T>, selector: (value: T) => G
         };
     }, []);
 
-    return value;
+    return selectedValue;
 }
