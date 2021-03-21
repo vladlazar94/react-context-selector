@@ -1,8 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-import { createContext } from "../src/CreateContext";
-import { useSelector } from "../src/UseSelector";
+import { createContext } from "../src/Hooks";
 
 const initialState = {
     foo: "foo",
@@ -11,7 +10,7 @@ const initialState = {
     },
 };
 
-const useNotifier = createContext(initialState);
+const [useNotifier, useSelector] = createContext(initialState);
 
 function App() {
     const [state, setState] = React.useState(initialState);
@@ -48,8 +47,8 @@ function ContextConsumers() {
 }
 
 function SomeComp() {
-    const foo = useSelector(useNotifier, c => c.foo);
-    const baz = useSelector(useNotifier, c => c.bar.baz);
+    const foo = useSelector(c => c.foo);
+    const baz = useSelector(c => c.bar.baz);
 
     return (
         <span>
@@ -60,13 +59,13 @@ function SomeComp() {
 }
 
 function SomeOtherComp() {
-    const baz = useSelector(useNotifier, c => c.bar.baz);
+    const baz = useSelector(c => c.bar.baz);
 
     return <span>{baz}</span>;
 }
 
 function SomeOptionalComp() {
-    const foo = useSelector(useNotifier, c => c.foo);
+    const foo = useSelector(c => c.foo);
 
     return <span>{foo}</span>;
 }
