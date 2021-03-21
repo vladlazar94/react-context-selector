@@ -33,10 +33,14 @@ function App() {
 }
 
 function ContextConsumers() {
+    const [show, setShow] = React.useState(true);
+
     return (
         <>
             <SomeComp />
             <SomeOtherComp />
+            {show ? <SomeOptionalComp /> : null}
+            <button onClick={() => setShow(!show)}>Show!</button>
         </>
     );
 }
@@ -57,6 +61,12 @@ function SomeOtherComp() {
     const baz = useSelector(context, c => c.bar.baz);
 
     return <span>{baz}</span>;
+}
+
+function SomeOptionalComp() {
+    const foo = useSelector(context, c => c.foo);
+
+    return <span>{foo}</span>;
 }
 
 ReactDOM.render(<App />, document.getElementById("react-root"));
