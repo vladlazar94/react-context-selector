@@ -21,7 +21,7 @@ function createProvider<T>(
     wrapper: MutableValueWrapper<T>,
     wrapperContext: React.Context<MutableValueWrapper<T>>,
     subscriptions: Set<Subscription<T, any>>
-): React.FunctionComponent<ValueWrapper<T>> {
+): React.FunctionComponent<React.PropsWithChildren<ValueWrapper<T>>> {
     return function (props) {
         wrapper.value = props.value;
 
@@ -36,6 +36,6 @@ function createProvider<T>(
             }
         }, [props.value]);
 
-        return <wrapperContext.Provider value={wrapper}></wrapperContext.Provider>;
+        return <wrapperContext.Provider value={wrapper}>{props.children}</wrapperContext.Provider>;
     };
 }

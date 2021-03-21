@@ -30,7 +30,7 @@ module.exports = {
         new CleanWebpackPlugin(),
         new ProgressBarPlugin(),
         new HtmlWebpackPlugin({
-            template: path.resolve(__dirname, "static", "index.html"),
+            template: path.resolve(__dirname, "dev", "index.html"),
         }),
     ],
 };
