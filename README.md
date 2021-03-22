@@ -1,6 +1,6 @@
 # React Context Selector
 
-## Current Vanilla React Context experience:
+## The current vanilla React context experience:
 
 ```jsx
 import React, { createContext, useContext, useReducer } from "react";
@@ -63,5 +63,5 @@ function Consumer() {
 
 ## Advantages:
 
-1. The providers stack linearly on top of each other, avoiding the provider hell.
-2. The context accessor hooks will only force a re-render if the selected value has changed.
+1. The providers stack linearly on top of each other, avoiding a deeply nested provider pyramid.
+2. The selector hooks will only force a component update if the selected value has changed.
