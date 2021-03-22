@@ -15,12 +15,12 @@ module.exports = {
         hot: true,
     },
     resolve: {
-        extensions: [".ts", ".tsx", ".js"],
+        extensions: [".ts", ".tsx", ".js", "jsx"],
     },
     module: {
         rules: [
             {
-                test: /\.tsx?$/,
+                test: /\.(t|j)sx?$/,
                 exclude: /node_modules/,
                 use: [{ loader: "ts-loader" }],
             },

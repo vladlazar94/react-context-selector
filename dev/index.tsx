@@ -4,86 +4,92 @@ import ReactDOM from "react-dom";
 import { createContext } from "../src/Hooks";
 
 const initialState = {
-    foo: "foo",
-    bar: {
-        baz: "baz",
+    contributor: {
+        personalInfo: {
+            name: "Derp",
+            email: "derp@derp.com",
+        },
+        insights: {
+            mostUsedLanguage: "TypeScript",
+        },
     },
 };
 
 const [useNotifier, useSelector] = createContext(initialState);
 
-function App() {
+export function App() {
     const [state, setState] = React.useState(initialState);
-    const app = React.useMemo(() => <ContextConsumers />, []);
 
     useNotifier(state);
 
-    return (
-        <div>
-            {app}
-            <button onClick={() => setState({ ...state, foo: `${state.foo}o` })}>Change foo</button>
-            <button
-                onClick={() =>
-                    setState({ ...state, bar: { ...state.bar, baz: `${state.bar.baz}z` } })
-                }
-            >
-                Change baz
-            </button>
-        </div>
+    const updateMostUsedLanguage = React.useCallback(
+        (mostUsedLanguage: string) =>
+            setState({
+                ...state,
+                contributor: {
+                    ...state.contributor,
+                    insights: { ...state.contributor.insights, mostUsedLanguage },
+                },
+            }),
+        []
     );
+
+    return <Page updateMostUsedLanguage={updateMostUsedLanguage} />;
 }
 
-function ContextConsumers() {
+function PersonalInfo() {
+    const name = useSelector(state => state.contributor.personalInfo.name);
+    const email = useSelector(state => state.contributor.personalInfo.email);
+
     return (
         <ul>
+            <strong>{"Personal Info"}</strong>
             <li>
-                <SomeComp />
+                <em>{`Name: ${name}`}</em>
             </li>
             <li>
-                <SomeOtherComp />
-            </li>
-            <li>
-                <SomeOptionalComp />
+                <em>{`Email: ${email}`}</em>
             </li>
         </ul>
     );
 }
 
-function SomeComp() {
-    const foo = useSelector(c => c.foo);
-    const baz = useSelector(c => c.bar.baz);
+function Insights(props: any) {
+    const mostUsedLanguage = useSelector(state => state.contributor.insights.mostUsedLanguage);
+
+    const [showInput, setShowInput] = React.useState(false);
+    const toggle = () => setShowInput(!showInput);
+
+    const editBtn = !showInput && <button onClick={toggle}>{"Edit"}</button>;
+    const okBtn = showInput && <button onClick={toggle}>{"Ok"}</button>;
+    const input = showInput && (
+        <input
+            value={mostUsedLanguage}
+            onChange={e => props.updateMostUsedLanguage(e.target.value)}
+        />
+    );
 
     return (
-        <span>
-            {foo}
-            {baz}
-        </span>
+        <ul>
+            <strong>{"Insights"}</strong>
+            <li>
+                <em>{`Most used language: ${mostUsedLanguage}`}</em>
+                {input}
+                {editBtn}
+                {okBtn}
+            </li>
+        </ul>
     );
 }
 
-function SomeOtherComp() {
-    const [showFoo, setShowFoo] = React.useState(true);
-    const selector = showFoo ? (c: any) => c.foo : (c: any) => c.bar.baz;
-    const baz = useSelector(selector);
-
+const Page = React.memo(function Page(props: any) {
     return (
-        <span>
-            {baz}
-            <button onClick={() => setShowFoo(!showFoo)}>Show foo or baz</button>
-        </span>
+        <>
+            <h2>{"GitHub Profile"}</h2>
+            <PersonalInfo />
+            <Insights {...props} />
+        </>
     );
-}
-
-function SomeOptionalComp() {
-    const [show, setShow] = React.useState(true);
-    const foo = useSelector(c => c.foo);
-
-    return (
-        <span>
-            {show ? foo : null}
-            <button onClick={() => setShow(!show)}>Show!</button>
-        </span>
-    );
-}
+});
 
 ReactDOM.render(<App />, document.getElementById("react-root"));
