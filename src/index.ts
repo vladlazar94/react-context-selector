@@ -32,10 +32,9 @@ function createUseProviderHook<T>(context: Context<T>): UseProvider<T> {
 }
 
 function createUseSelectorHook<T>(contextData: Context<T>): UseSelector<T> {
-    return function (select = identity, areEqual = areEqualByReference) {
+    return function (select = returnTheSameThing, areEqual = areEqualByReference) {
         const selectedValue = select(contextData.value);
-
-        const [, notifyUpdate] = useReducer(s => !s, true);
+        const notifyUpdate = useReducer(s => !s, true)[1];
         const subscription = useMemo(
             () => ({
                 select,
@@ -52,7 +51,6 @@ function createUseSelectorHook<T>(contextData: Context<T>): UseSelector<T> {
 
         useEffect(() => {
             contextData.subscriptions.add(subscription);
-
             return () => {
                 contextData.subscriptions.delete(subscription);
             };
@@ -66,14 +64,15 @@ function areEqualByReference<G>(left: G, right: G): boolean {
     return left === right;
 }
 
-function identity<T>(value: T): T {
+function returnTheSameThing<T>(value: T): T {
     return value;
 }
 
 type UseProvider<T> = (value: T) => void;
-type UseSelector<T> = <G = T>(selector?: Selector<T, G>, areEqual?: EqualityFn<G>) => G;
-type Selector<T, G> = (value: T) => G;
-type EqualityFn<G> = (left: G, right: G) => boolean;
+type UseSelector<T> = <G = T>(
+    selector?: (value: T) => G,
+    areEqual?: (left: G, right: G) => boolean
+) => G;
 
 type Context<T> = {
     value: T;
@@ -82,7 +81,7 @@ type Context<T> = {
 
 type Subscription<T, G> = {
     selectedValue: G;
-    select: Selector<T, G>;
-    areEqual: EqualityFn<G>;
+    select: (value: T) => G;
+    areEqual: (left: G, right: G) => boolean;
     notifyUpdate: () => void;
 };
