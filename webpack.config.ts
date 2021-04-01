@@ -6,9 +6,7 @@ const config: Webpack.Configuration = {
     mode: "development",
     devtool: "cheap-module-source-map",
     entry: path.resolve(__dirname, "dev", "main.tsx"),
-    output: {
-        path: path.resolve(__dirname, "dist"),
-    },
+    output: { path: path.resolve(__dirname, "dist") },
     resolve: {
         extensions: [".ts", ".tsx", ".js", "jsx"],
     },
