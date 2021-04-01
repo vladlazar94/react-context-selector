@@ -32,9 +32,12 @@ function createUseProviderHook<T>(context: Context<T>): UseProvider<T> {
 }
 
 function createUseSelectorHook<T>(contextData: Context<T>): UseSelector<T> {
-    return function (select = returnTheSameThing, areEqual = areEqualByReference) {
+    return function (
+        select = returnTheSameThing as <G>(value: T) => G,
+        areEqual = areEqualByReference
+    ) {
         const selectedValue = select(contextData.value);
-        const notifyUpdate = useReducer(s => !s, true)[1];
+        const notifyUpdate = useReducer(c => c + 1, 0)[1];
         const subscription = useMemo(
             () => ({
                 select,
