@@ -1,18 +1,13 @@
-const path = require("path");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
-const ProgressBarPlugin = require("progress-bar-webpack-plugin");
-const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+import path from "path";
+import Webpack from "webpack";
+import HtmlWebpackPlugin from "html-webpack-plugin";
 
-module.exports = {
+const config: Webpack.Configuration = {
     mode: "development",
-    devtool: "inline-source-map",
+    devtool: "cheap-module-source-map",
     entry: path.resolve(__dirname, "dev", "main.tsx"),
     output: {
         path: path.resolve(__dirname, "dist"),
-    },
-    devServer: {
-        contentBase: "./dist",
-        hot: true,
     },
     resolve: {
         extensions: [".ts", ".tsx", ".js", "jsx"],
@@ -27,10 +22,10 @@ module.exports = {
         ],
     },
     plugins: [
-        new CleanWebpackPlugin(),
-        new ProgressBarPlugin(),
         new HtmlWebpackPlugin({
             template: path.resolve(__dirname, "dev", "index.html"),
         }),
     ],
 };
+
+export default config;

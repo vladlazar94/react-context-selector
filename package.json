@@ -2,6 +2,7 @@
     "name": "react-context-selector",
     "version": "1.0.0",
     "main": "dist/index.js",
+    "type": "module",
     "repository": "https://github.com/vladlazar94/react-context-selector.git",
     "author": "Vlad Lazar <vladlazar94@outlook.com>",
     "license": "MIT",
@@ -13,8 +14,11 @@
     "devDependencies": {
         "@types/jest": "^26.0.22",
         "@types/lodash": "^4.14.168",
+        "@types/node": "^14.14.37",
+        "@types/progress-bar-webpack-plugin": "^2.1.1",
         "@types/react": "^17.0.3",
         "@types/react-dom": "^17.0.2",
+        "@types/webpack": "^5.28.0",
         "clean-webpack-plugin": "^3.0.0",
         "html-webpack-plugin": "^5.3.1",
         "jest": "^26.6.3",
@@ -39,8 +43,8 @@
         "arrowParens": "avoid"
     },
     "scripts": {
-        "build": "webpack --config webpack.config.js",
-        "dev": "webpack serve --config webpack.config.js",
+        "build": "webpack --config webpack.config.ts",
+        "dev": "webpack serve --config webpack.config.ts",
         "test": "jest"
     }
 }
