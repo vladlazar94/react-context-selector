@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-import { createContext } from "../src";
+import { createContext } from "../src/main";
 
 const initialState = {
     contributor: {
